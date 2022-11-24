@@ -56,4 +56,15 @@ describe('Entity user tests', () => {
       })
     }).toThrow()
   })
+
+  it('should password field not save directly', () => {
+    const user = new User({
+      name: 'Joe',
+      lastName: 'Doe',
+      email: 'joe.doe@email.com',
+      password: 'qwerty123'
+    })
+
+    expect(user.password).not.toBe('querty123')
+  })
 })
