@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid'
-import { hash } from 'bcrypt'
 
 export interface UserProps {
   id: string
@@ -57,14 +56,6 @@ export class User {
     if (!newPassword)
       throw new Error('user password error, the password field cannot be blank')
 
-    hash(newPassword, 10)
-      .then(passwordHash => {
-        newPassword = passwordHash
-      })
-      .catch(err => {
-        throw new Error(err.message)
-      })
-
     this.props.password = newPassword
   }
 
@@ -74,14 +65,6 @@ export class User {
   ) {
     if (!(name && lastName && email && password))
       throw new Error('user blank field error: all fields must be filled')
-
-    hash(password, 10)
-      .then(hashPassword => {
-        password = hashPassword
-      })
-      .catch(err => {
-        throw new Error(err.message)
-      })
 
     this.props = {
       id: id || uuidv4(),
