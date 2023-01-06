@@ -27,6 +27,10 @@ export const CreateUserUseCase = (usersRepository: IUsersRepository) => {
       password
     })
 
+    const userExists = await usersRepository.getUserByEmail(newUser.email)
+
+    if (userExists) throw new Error('Create user error: User already exists')
+
     await usersRepository.createUser(newUser)
 
     const oneDay = 86400

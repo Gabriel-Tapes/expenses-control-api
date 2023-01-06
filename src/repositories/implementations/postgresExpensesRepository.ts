@@ -163,7 +163,7 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
     ownerId: string,
     expenseId: string
   ): Promise<Expense | null> => {
-    const expense = await getExpenseById(expenseId, ownerId)
+    const expense = await getExpenseById(ownerId, expenseId)
 
     if (!expense) return null
 
@@ -174,13 +174,12 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
       UPDATE 
         EXPENSES 
       SET 
-        (PAID, PAID_AT) 
-      VALUES 
-        ($1, $2) 
+        PAID = $1,
+        PAID_AT = $2 
       WHERE 
         ID = $3 AND OWNER_ID = $4
       `,
-      [expense.paid, expense.paidAt, expenseId, ownerId]
+      [expense.paid, new Date(), expenseId, ownerId]
     )
 
     return expense
@@ -217,9 +216,10 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
         UPDATE 
           EXPENSES
         SET 
-          (DESCRIPTION, COST, PAID, PAID_AT) 
-        VALUES 
-          ($2, $3, $4, $5) 
+          DESCRIPTION = $2, 
+          COST = $3, 
+          PAID = $4, 
+          PAID_AT = $5
         WHERE 
           ID = $1
       `,
