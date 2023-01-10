@@ -1,4 +1,4 @@
-import { User, UserProps } from '../entities/user'
+import { User } from '../entities/user'
 
 export interface editUserDTO {
   id: string
@@ -8,15 +8,9 @@ export interface editUserDTO {
 }
 
 export interface IUsersRepository {
-  getUserPassword(email: string): Promise<string | null>
   createUser(user: User): Promise<void>
-  getUserById(userId: string): Promise<Omit<UserProps, 'password'> | null>
-  getUserByEmail(userEmail: string): Promise<Omit<UserProps, 'password'> | null>
-  editUser({
-    id,
-    name,
-    lastName,
-    password
-  }: editUserDTO): Promise<Omit<UserProps, 'password'>>
+  getUserById(userId: string): Promise<User | null>
+  getUserByEmail(userEmail: string): Promise<User | null>
+  editUser({ id, name, lastName, password }: editUserDTO): Promise<User>
   deleteUser(userId: string): Promise<void>
 }

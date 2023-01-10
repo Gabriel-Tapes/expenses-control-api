@@ -19,31 +19,6 @@ describe('In memory users repository tests', () => {
     expect(createdUser.id).toEqual(user.id)
   })
 
-  it('should be able to get a password with a valid user email', async () => {
-    const usersRepository = InMemoryUsersRepository()
-    const user = new User({
-      name: 'Joe',
-      lastName: 'Doe',
-      email: 'joe.doe@exemple.com',
-      password: '123456'
-    })
-
-    await usersRepository.createUser(user)
-
-    const password = await usersRepository.getUserPassword(user.email)
-
-    expect(password).toBeTruthy()
-  })
-
-  it('should not be able to get a password with an invalid user email', async () => {
-    const usersRepository = InMemoryUsersRepository()
-    const password = await usersRepository.getUserPassword(
-      'invalidEmail@invalid.com'
-    )
-
-    expect(password).toBeNull()
-  })
-
   it('should be able to get an user by id', async () => {
     const usersRepository = InMemoryUsersRepository()
     const user = new User({
@@ -113,15 +88,12 @@ describe('In memory users repository tests', () => {
     }
 
     const editedUser = await usersRepository.editUser(editUserData)
-    const editedUserPassword = await usersRepository.getUserPassword(
-      editedUser.email
-    )
 
     expect(editedUser).toBeTruthy()
     expect(editedUser.name).toEqual(editUserData.name)
     expect(editedUser.lastName).toEqual(editUserData.lastName)
     expect(editedUser.email).toEqual(user.email)
-    expect(editedUserPassword).toEqual(editUserData.password)
+    expect(editedUser.password).toEqual(editUserData.password)
   })
 
   it('should not be able to edit an user with invalid id given', async () => {
@@ -178,9 +150,9 @@ describe('In memory users repository tests', () => {
 
     await usersRepository.createUser(user)
 
-    const archivedPassword = await usersRepository.getUserPassword(user.email)
+    const savedUser = await usersRepository.getUserById(user.id)
 
-    expect(archivedPassword).not.toEqual(user.password)
+    expect(savedUser.password).not.toEqual(user.password)
   })
 
   it('should be the created user password is not saves directly', async () => {
@@ -194,8 +166,8 @@ describe('In memory users repository tests', () => {
 
     await usersRepository.createUser(user)
 
-    const archivedPassword = await usersRepository.getUserPassword(user.email)
+    const savedUser = await usersRepository.getUserById(user.id)
 
-    expect(archivedPassword).not.toEqual(user.password)
+    expect(savedUser.password).not.toEqual(user.password)
   })
 })

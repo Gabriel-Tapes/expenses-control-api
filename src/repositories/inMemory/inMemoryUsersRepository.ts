@@ -5,11 +5,6 @@ import { hash } from 'bcrypt'
 export const InMemoryUsersRepository = (): IUsersRepository => {
   let users: User[] = []
 
-  const getUserPassword = async (email: string): Promise<string | null> => {
-    const user = users.find(user => user.email === email)
-
-    return user ? user.password : null
-  }
   const createUser = async (user: User): Promise<void> => {
     users.push(
       new User(
@@ -50,7 +45,6 @@ export const InMemoryUsersRepository = (): IUsersRepository => {
   }
 
   return Object.freeze({
-    getUserPassword,
     createUser,
     getUserById,
     getUserByEmail,

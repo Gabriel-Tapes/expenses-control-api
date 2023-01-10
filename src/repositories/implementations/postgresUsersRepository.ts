@@ -1,7 +1,7 @@
 import { IUsersRepository, editUserDTO } from '@repositories/IUsersRepository'
 import { Pool } from 'pg'
 import { createDatabaseConnection } from '@database/connectDatabase'
-import { User, UserProps } from '@entities/user'
+import { User } from '@entities/user'
 import { hash } from 'bcrypt'
 
 export const PostgresUsersRepository = (): IUsersRepository => {
@@ -9,20 +9,6 @@ export const PostgresUsersRepository = (): IUsersRepository => {
 
   const connectDatabase = async () => {
     if (!client) client = await createDatabaseConnection()
-  }
-
-  const getUserPassword = async (email: string): Promise<string | null> => {
-    await connectDatabase()
-
-    const { rows } = await client.query(
-      'SELECT PASSWORD FROM USERS WHERE EMAIL = $1',
-      [email]
-    )
-    if (!rows.length) return null
-
-    const { password } = rows[0]
-
-    return password
   }
 
   const createUser = async (user: User): Promise<void> => {
@@ -36,9 +22,7 @@ export const PostgresUsersRepository = (): IUsersRepository => {
     )
   }
 
-  const getUserById = async (
-    id: string
-  ): Promise<Omit<UserProps, 'password'>> => {
+  const getUserById = async (id: string): Promise<User | null> => {
     await connectDatabase()
 
     const { rows } = await client.query('SELECT * FROM USERS WHERE ID = $1', [
@@ -47,19 +31,20 @@ export const PostgresUsersRepository = (): IUsersRepository => {
 
     if (!rows.length) return null
 
-    const { name, last_name: lastName, email } = rows[0]
+    const { name, last_name: lastName, email, password } = rows[0]
 
-    return {
-      id,
-      name,
-      lastName,
-      email
-    }
+    return new User(
+      {
+        name,
+        lastName,
+        email,
+        password
+      },
+      id
+    )
   }
 
-  const getUserByEmail = async (
-    email: string
-  ): Promise<Omit<UserProps, 'password'>> => {
+  const getUserByEmail = async (email: string): Promise<User | null> => {
     await connectDatabase()
 
     const { rows } = await client.query(
@@ -69,14 +54,17 @@ export const PostgresUsersRepository = (): IUsersRepository => {
 
     if (!rows.length) return null
 
-    const { id, name, last_name: lastName } = rows[0]
+    const { id, name, last_name: lastName, password } = rows[0]
 
-    return {
-      id,
-      name,
-      lastName,
-      email
-    }
+    return new User(
+      {
+        name,
+        lastName,
+        email,
+        password
+      },
+      id
+    )
   }
 
   const editUser = async ({
@@ -84,23 +72,19 @@ export const PostgresUsersRepository = (): IUsersRepository => {
     name,
     lastName,
     password
-  }: editUserDTO): Promise<Omit<UserProps, 'password'>> => {
+  }: editUserDTO): Promise<User> => {
     await connectDatabase()
 
     const oldUser = await getUserById(id)
 
-    const editedUser = {
-      id,
+    const passwordHash = password ? await hash(password, 10) : oldUser.password
+
+    const editedUser = new User({
       name: name ?? oldUser.name,
       lastName: lastName ?? oldUser.lastName,
-      email: oldUser.email
-    }
-
-    const passwordHash = password
-      ? await hash(password, 10)
-      : await getUserPassword(oldUser.email)
-
-    console.log(editedUser)
+      email: oldUser.email,
+      password: passwordHash
+    })
 
     client.query(
       'UPDATE USERS SET NAME = $2, LAST_NAME = $3, PASSWORD = $4 WHERE ID = $1',
@@ -117,7 +101,6 @@ export const PostgresUsersRepository = (): IUsersRepository => {
   }
 
   return Object.freeze({
-    getUserPassword,
     createUser,
     getUserById,
     getUserByEmail,

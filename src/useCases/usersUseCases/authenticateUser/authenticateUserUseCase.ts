@@ -2,11 +2,11 @@ import { IUsersRepository } from '@repositories/IUsersRepository'
 import { IAuthenticateUserDTO } from './IAuthenticateUserDTO'
 import { compare as passwordCompare } from 'bcrypt'
 import { sign as jwtSign } from 'jsonwebtoken'
-import { UserProps } from '@entities/user'
+import { User } from '@entities/user'
 
 export interface IAuthenticateUserUseCase {
   execute({ email, password }: IAuthenticateUserDTO): Promise<{
-    user: Omit<UserProps, 'password'>
+    user: Omit<User, 'password'>
     token: string
   }>
 }
@@ -19,9 +19,7 @@ export const AuthenticateUserUseCase = (
 
     if (!user) throw new Error('Authenticate User Error: User not found')
 
-    const archivedPassword = await usersRepository.getUserPassword(email)
-
-    if (!(await passwordCompare(password, archivedPassword)))
+    if (!(await passwordCompare(password, user.password)))
       throw new Error('Authenticate User Error: Invalid Password')
 
     const oneDay = 86400
