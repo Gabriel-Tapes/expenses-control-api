@@ -1,23 +1,23 @@
-import { UserProps } from '@entities/user'
+import { User } from '@entities/user'
 import { IUsersRepository } from '@repositories/IUsersRepository'
 
 export interface IGetUserUseCase {
-  execute(id: string): Promise<Omit<UserProps, 'password'>>
+  execute(id: string): Promise<Omit<User, 'password'>>
 }
 
 export const GetUserUseCase = (usersRepository: IUsersRepository) => {
-  const execute = async (id: string) => {
+  const execute = async (id: string): Promise<Omit<User, 'password'>> => {
     if (!id) throw new Error('No id provided')
 
-    const { name, lastName, email } = await usersRepository.getUserById(id)
+    const user = await usersRepository.getUserById(id)
 
-    if (!name) throw new Error('User not found')
+    if (!user) throw new Error('User not found')
 
     return {
       id,
-      name,
-      lastName,
-      email
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email
     }
   }
 
