@@ -1,14 +1,9 @@
-import { UserProps } from '@entities/user'
+import { User } from '@entities/user'
 import { IUsersRepository } from '@repositories/IUsersRepository'
 import { IEditUserDTO } from './IEditUserDTO'
 
 export interface IEditUserUseCase {
-  execute({
-    id,
-    name,
-    lastName,
-    password
-  }: IEditUserDTO): Promise<Omit<UserProps, 'password'>>
+  execute({ id, name, lastName, password }: IEditUserDTO): Promise<User>
 }
 
 export const EditUserUseCase = (
@@ -19,7 +14,7 @@ export const EditUserUseCase = (
     name,
     lastName,
     password
-  }: IEditUserDTO): Promise<Omit<UserProps, 'password'>> => {
+  }: IEditUserDTO): Promise<User> => {
     const oldUser = await usersRepository.getUserById(id)
 
     if (!oldUser) throw new Error('Edit User error: user not found')
