@@ -39,7 +39,7 @@ describe('Authenticate user use case tests', () => {
 
     await usersRepository.createUser(newUser)
 
-    expect(async () => {
+    await expect(async () => {
       return await authenticateUserUseCase.execute({
         email: 'any invalid email',
         password: newUser.password
@@ -60,11 +60,11 @@ describe('Authenticate user use case tests', () => {
 
     await usersRepository.createUser(user)
 
-    expect(async () => {
+    await expect(async () => {
       return authenticateUserUseCase.execute({
         email: user.email,
         password: 'An invalid password'
       })
-    }).rejects.toThrow()
+    }).rejects.toThrow('Authenticate User Error: Invalid Password')
   })
 })
