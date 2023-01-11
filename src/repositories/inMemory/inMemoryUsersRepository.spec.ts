@@ -30,17 +30,17 @@ describe('In memory users repository tests', () => {
 
     await usersRepository.createUser(user)
 
-    const gettedUser = await usersRepository.getUserById(user.id)
+    const gottenUser = await usersRepository.getUserById(user.id)
 
-    expect(gettedUser).toBeTruthy()
+    expect(gottenUser).toBeTruthy()
   })
 
   it('should not be able to get an user with an invalid id', async () => {
     const usersRepository = InMemoryUsersRepository()
 
-    const gettedUser = await usersRepository.getUserById('invalid id')
+    const gottenUser = await usersRepository.getUserById('invalid id')
 
-    expect(gettedUser).toBeNull()
+    expect(gottenUser).toBeNull()
   })
 
   it('should be able to get an user by email', async () => {
@@ -54,19 +54,19 @@ describe('In memory users repository tests', () => {
 
     await usersRepository.createUser(user)
 
-    const gettedUser = await usersRepository.getUserByEmail(user.email)
+    const gottenUser = await usersRepository.getUserByEmail(user.email)
 
-    expect(gettedUser).toBeTruthy()
+    expect(gottenUser).toBeTruthy()
   })
 
   it('should not be able to get an user with an invalid email', async () => {
     const usersRepository = InMemoryUsersRepository()
 
-    const gettedUser = await usersRepository.getUserByEmail(
+    const gottenUser = await usersRepository.getUserByEmail(
       'invalid@invalid.com'
     )
 
-    expect(gettedUser).toBeNull()
+    expect(gottenUser).toBeNull()
   })
 
   it('should be able to edit an user', async () => {
@@ -116,9 +116,9 @@ describe('In memory users repository tests', () => {
 
     await usersRepository.deleteUser(user.id)
 
-    const gettedUser = await usersRepository.getUserById(user.id)
+    const gottenUser = await usersRepository.getUserById(user.id)
 
-    expect(gettedUser).toBeNull()
+    expect(gottenUser).toBeNull()
   })
 
   it('should not be able to delete an user with an invalid id given', async () => {
@@ -134,9 +134,9 @@ describe('In memory users repository tests', () => {
 
     await usersRepository.deleteUser('invalid id')
 
-    const gettedUser = await usersRepository.getUserById(user.id)
+    const gottenUser = await usersRepository.getUserById(user.id)
 
-    expect(gettedUser).toBeTruthy()
+    expect(gottenUser).toBeTruthy()
   })
 
   it('should be the created user password to be a hash', async () => {
