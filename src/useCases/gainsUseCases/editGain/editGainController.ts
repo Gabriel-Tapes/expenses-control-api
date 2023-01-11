@@ -4,14 +4,17 @@ import { IEditGainUseCase } from './editGainUseCase'
 export const EditGainController = (editGainUseCase: IEditGainUseCase) => {
   const handle = async (req: Request, res: Response) => {
     const userId = req.headers.userId as string
-    const { id: gainId, value: newValue } = req.body
+    const { id: gainId, value, gainedAt } = req.body
 
     try {
       const gain = await editGainUseCase.execute({
         ownerId: userId,
         gainId,
-        newValue
+        value,
+        gainedAt
       })
+
+      if (!gain) return res.status(404).json({ error: 'gain not found' })
 
       return res.status(200).json({
         gain: {

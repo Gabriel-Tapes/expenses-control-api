@@ -3,7 +3,7 @@ import { IGainRepository } from '@repositories/IGainsRepository'
 import { IEditGainDTO } from './IEditGainDTO'
 
 export interface IEditGainUseCase {
-  execute({ ownerId, gainId, newValue }: IEditGainDTO): Promise<Gain>
+  execute({ ownerId, gainId, value, gainedAt }: IEditGainDTO): Promise<Gain>
 }
 
 export const EditGainUseCase = (
@@ -12,22 +12,12 @@ export const EditGainUseCase = (
   const execute = async ({
     ownerId,
     gainId,
-    newValue
+    value,
+    gainedAt
   }: IEditGainDTO): Promise<Gain> => {
-    if (!newValue) throw new Error('Edit gain error: not value provided')
+    if (value < 0) throw new Error('Edit gain error: invalid value provided')
 
-    if (newValue < 0) throw new Error('Edit gain error: invalid value provided')
-
-    const { gain, ownerId: gainOwnerId } = await gainsRepository.getGainById(
-      gainId
-    )
-
-    if (!gain) throw new Error('Edit gain error: gain not found')
-    if (ownerId !== gainOwnerId) throw new Error('access denied')
-
-    gain.value = newValue
-
-    return await gainsRepository.editGain(gain)
+    return await gainsRepository.editGain({ ownerId, gainId, value, gainedAt })
   }
 
   return Object.freeze({ execute })

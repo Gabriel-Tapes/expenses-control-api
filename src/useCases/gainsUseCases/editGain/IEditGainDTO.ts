@@ -1,5 +1,6 @@
 export interface IEditGainDTO {
   ownerId: string
   gainId: string
-  newValue: number
+  value?: number
+  gainedAt?: Date
 }
