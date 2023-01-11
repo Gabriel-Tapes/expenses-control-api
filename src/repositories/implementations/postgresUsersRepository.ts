@@ -25,6 +25,11 @@ export const PostgresUsersRepository = (): IUsersRepository => {
   const getUserById = async (id: string): Promise<User | null> => {
     await connectDatabase()
 
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!id.match(validUuidRegex)) return null
+
     const { rows } = await client.query('SELECT * FROM USERS WHERE ID = $1', [
       id
     ])
@@ -76,6 +81,8 @@ export const PostgresUsersRepository = (): IUsersRepository => {
     await connectDatabase()
 
     const oldUser = await getUserById(id)
+
+    if (!oldUser) return null
 
     const passwordHash = password ? await hash(password, 10) : oldUser.password
 
