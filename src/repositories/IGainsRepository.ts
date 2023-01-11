@@ -8,7 +8,7 @@ export interface editGainDTO {
 }
 
 export interface IGainRepository {
-  createGain(ownerId: string, gain: Gain): Promise<Gain>
+  createGain(ownerId: string, gain: Gain): Promise<void>
   getGainById(ownerId: string, gainId: string): Promise<Gain | null>
   getAllGains(ownerId: string): Promise<Gain[]>
   editGain({

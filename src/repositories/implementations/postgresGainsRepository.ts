@@ -10,15 +10,13 @@ export const PostgresGainsRepository = (): IGainRepository => {
     if (!client) client = await createDatabaseConnection()
   }
 
-  const createGain = async (ownerId: string, gain: Gain): Promise<Gain> => {
+  const createGain = async (ownerId: string, gain: Gain): Promise<void> => {
     await connectDatabase()
 
     await client.query(
       'INSERT INTO GAINS (ID, VALUE, GAINED_AT, OWNER_ID) VALUES ($1, $2, $3, $4)',
       [gain.id, gain.value, gain.gainedAt, ownerId]
     )
-
-    return gain
   }
 
   const getGainById = async (
