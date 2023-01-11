@@ -6,13 +6,7 @@ export interface IDeleteGainUseCase {
 
 export const DeleteGainUseCase = (gainsRepository: IGainRepository) => {
   const execute = async (ownerId: string, gainId: string): Promise<void> => {
-    const gain = await gainsRepository.getGainById(gainId)
-
-    if (!gain) throw new Error('Gain not found')
-
-    if (ownerId !== gain.ownerId) throw new Error('access denied')
-
-    await gainsRepository.deleteGain(gainId)
+    await gainsRepository.deleteGain(ownerId, gainId)
   }
 
   return Object.freeze({ execute })

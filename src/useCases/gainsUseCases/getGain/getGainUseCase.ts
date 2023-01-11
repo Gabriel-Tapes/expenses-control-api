@@ -3,16 +3,15 @@ import { IGainRepository } from '@repositories/IGainsRepository'
 import { IGetGainDTO } from './IGetGainDTO'
 
 export interface IGetGainUseCase {
-  execute({
-    gainId
-  }: IGetGainDTO): Promise<{ gain: Gain; ownerId: string } | null>
+  execute({ ownerId, gainId }: IGetGainDTO): Promise<Gain | null>
 }
 
 export const GetGainUseCase = (gainsRepository: IGainRepository) => {
   const execute = async ({
+    ownerId,
     gainId
-  }: IGetGainDTO): Promise<{ gain: Gain; ownerId: string } | null> => {
-    return await gainsRepository.getGainById(gainId)
+  }: IGetGainDTO): Promise<Gain | null> => {
+    return await gainsRepository.getGainById(ownerId, gainId)
   }
 
   return Object.freeze({ execute })

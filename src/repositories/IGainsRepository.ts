@@ -1,9 +1,21 @@
 import { Gain } from '../entities/gain'
 
+export interface editGainDTO {
+  ownerId: string
+  gainId: string
+  value?: number
+  gainedAt?: Date
+}
+
 export interface IGainRepository {
   createGain(ownerId: string, gain: Gain): Promise<Gain>
-  getGainById(gainId: string): Promise<{ gain: Gain, ownerId: string } | null>
+  getGainById(ownerId: string, gainId: string): Promise<Gain | null>
   getAllGains(ownerId: string): Promise<Gain[]>
-  editGain(editedGain: Gain): Promise<Gain | null>
-  deleteGain(gainId: string): Promise<void>
+  editGain({
+    ownerId,
+    gainId,
+    value,
+    gainedAt
+  }: editGainDTO): Promise<Gain | null>
+  deleteGain(ownerId: string, gainId: string): Promise<void>
 }
