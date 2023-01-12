@@ -19,7 +19,5 @@
       "@useCases/*": ["useCases/*"],
       "@database/*": ["database/*"]
     }
-  },
-  "include": ["src/**/*.ts", "jest.config.js"],
-  "exclude": ["src/**/*.spec.ts", "**/node_modules"]
+  }
 }
