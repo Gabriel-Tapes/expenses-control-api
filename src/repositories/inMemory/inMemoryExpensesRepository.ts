@@ -99,7 +99,10 @@ export const InMemoryExpensesRepository = (): IExpenseRepository => {
   ): Promise<void> => {
     expenses = expenses.filter(
       expenseData =>
-        expenseData.ownerId !== ownerId && expenseData.expense.id !== expenseId
+        !(
+          expenseData.ownerId === ownerId &&
+          expenseData.expense.id === expenseId
+        )
     )
   }
 

@@ -132,4 +132,52 @@ describe('In memory Gains repository tests', () => {
 
     expect(deletedGain).toBeNull()
   })
+
+  it('should not delete an gain if a non-matching gain id is provided', async () => {
+    const gainsRepository = InMemoryGainsRepository()
+
+    const gain = new Gain({ value: 30 })
+
+    await gainsRepository.createGain('ownerId', gain)
+
+    await gainsRepository.deleteGain('ownerId', 'non-matching gain id')
+
+    const deletedGain = await gainsRepository.getGainById('ownerId', gain.id)
+
+    expect(deletedGain).toBeTruthy()
+    expect(deletedGain).toEqual(gain)
+  })
+
+  it('should not delete an gain if a non-matching owner id is provided', async () => {
+    const gainsRepository = InMemoryGainsRepository()
+
+    const gain = new Gain({ value: 30 })
+
+    await gainsRepository.createGain('ownerId', gain)
+
+    await gainsRepository.deleteGain('non-matching owner id', gain.id)
+
+    const deletedGain = await gainsRepository.getGainById('ownerId', gain.id)
+
+    expect(deletedGain).toBeTruthy()
+    expect(deletedGain).toEqual(gain)
+  })
+
+  it('should not delete an gain if a non-matching owner and gain id are provided', async () => {
+    const gainsRepository = InMemoryGainsRepository()
+
+    const gain = new Gain({ value: 30 })
+
+    await gainsRepository.createGain('ownerId', gain)
+
+    await gainsRepository.deleteGain(
+      'non-matching owner id',
+      'non-matching gain id'
+    )
+
+    const deletedGain = await gainsRepository.getGainById('ownerId', gain.id)
+
+    expect(deletedGain).toBeTruthy()
+    expect(deletedGain).toEqual(gain)
+  })
 })

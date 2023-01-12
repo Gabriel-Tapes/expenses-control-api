@@ -50,7 +50,7 @@ export const InMemoryGainsRepository = (): IGainRepository => {
 
   const deleteGain = async (ownerId: string, gainId: string): Promise<void> => {
     gains = gains.filter(
-      gainData => gainData.gain.id !== gainId && gainData.ownerId !== ownerId
+      gainData => !(gainData.gain.id === gainId && gainData.ownerId === ownerId)
     )
   }
 

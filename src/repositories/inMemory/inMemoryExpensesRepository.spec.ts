@@ -218,4 +218,73 @@ describe('In Memory Expenses repository its', () => {
     )
     expect(result).toBeNull()
   })
+
+  it('should not delete an expense if a non-matching expense id is provided', async () => {
+    const expensesRepository = InMemoryExpensesRepository()
+
+    const expense = new Expense({
+      description: 'test expense',
+      cost: 100,
+      paid: false
+    })
+
+    await expensesRepository.createExpense('ownerId', expense)
+
+    await expensesRepository.deleteExpense('ownerId', 'non-matching expense id')
+
+    const deletedExpense = await expensesRepository.getExpenseById(
+      'ownerId',
+      expense.id
+    )
+
+    expect(deletedExpense).toBeTruthy()
+    expect(deletedExpense).toEqual(expense)
+  })
+
+  it('should not delete an expense if a non-matching owner id is provided', async () => {
+    const expensesRepository = InMemoryExpensesRepository()
+
+    const expense = new Expense({
+      description: 'test expense',
+      cost: 100,
+      paid: false
+    })
+
+    await expensesRepository.createExpense('ownerId', expense)
+
+    await expensesRepository.deleteExpense('non-matching owner id', expense.id)
+
+    const deletedExpense = await expensesRepository.getExpenseById(
+      'ownerId',
+      expense.id
+    )
+
+    expect(deletedExpense).toBeTruthy()
+    expect(deletedExpense).toEqual(expense)
+  })
+
+  it('should not delete an expense if a non-matching owner and expense id are provided', async () => {
+    const expensesRepository = InMemoryExpensesRepository()
+
+    const expense = new Expense({
+      description: 'test expense',
+      cost: 100,
+      paid: false
+    })
+
+    await expensesRepository.createExpense('ownerId', expense)
+
+    await expensesRepository.deleteExpense(
+      'non-matching owner id',
+      'non-matching expense id'
+    )
+
+    const deletedExpense = await expensesRepository.getExpenseById(
+      'ownerId',
+      expense.id
+    )
+
+    expect(deletedExpense).toBeTruthy()
+    expect(deletedExpense).toEqual(expense)
+  })
 })
