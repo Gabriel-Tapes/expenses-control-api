@@ -13,7 +13,7 @@ export const GetExpenseUseCase = (
     ownerId,
     expenseId
   }: IGetExpenseDTO): Promise<Expense | null> => {
-    return await expensesRepository.getExpenseById(expenseId, ownerId)
+    return await expensesRepository.getExpenseById(ownerId, expenseId)
   }
 
   return Object.freeze({ execute })
