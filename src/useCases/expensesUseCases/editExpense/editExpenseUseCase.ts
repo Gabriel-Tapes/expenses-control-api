@@ -24,6 +24,9 @@ export const EditExpenseUseCase = (
     paid,
     paidAt
   }: IEditExpenseDTO): Promise<Expense | null> => {
+    if (cost && cost < 0)
+      throw new Error('edit expense error: invalid cost less than 0')
+
     return await expensesRepository.editExpense({
       ownerId,
       expenseId,
