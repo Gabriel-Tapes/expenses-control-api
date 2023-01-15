@@ -6,7 +6,7 @@ export const GetExpensesController = (
 ) => {
   const handle = async (req: Request, res: Response) => {
     const userId = req.headers.userId as string
-    const strategy = req.query.strategy.toString()
+    const strategy = req.query.strategy?.toString()
 
     try {
       const expenses = await getExpensesUseCase.execute({
