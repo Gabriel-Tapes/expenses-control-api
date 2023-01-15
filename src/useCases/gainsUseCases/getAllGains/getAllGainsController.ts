@@ -16,7 +16,7 @@ export const GetAllGainsController = (
         }
       })
 
-      return res.status(400).json({ ownerId: userId, gains })
+      return res.status(200).json({ ownerId: userId, gains })
     } catch (err) {
       if (err) return res.status(400).json({ error: err.message })
     }
