@@ -25,6 +25,12 @@ export const PostgresGainsRepository = (): IGainRepository => {
   ): Promise<Gain | null> => {
     await connectDatabase()
 
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!(ownerId.match(validUuidRegex) && gainId.match(validUuidRegex)))
+      return null
+
     const { rows } = await client.query(
       'SELECT * FROM GAINS WHERE ID = $1 AND OWNER_ID = $2',
       [gainId, ownerId]
@@ -47,6 +53,11 @@ export const PostgresGainsRepository = (): IGainRepository => {
 
   const getAllGains = async (ownerId: string): Promise<Gain[]> => {
     await connectDatabase()
+
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!ownerId.match(validUuidRegex)) return []
 
     const { rows } = await client.query(
       'SELECT * FROM GAINS WHERE OWNER_ID = $1',
@@ -91,7 +102,7 @@ export const PostgresGainsRepository = (): IGainRepository => {
     )
 
     await client.query(
-      'UPDATE GAINS SET VALUE = $1 GAINED_AT = $2 WHERE ID = $3 AND OWNER_ID = $4',
+      'UPDATE GAINS SET VALUE = $1, GAINED_AT = $2 WHERE ID = $3 AND OWNER_ID = $4',
       [editedGain.value, editedGain.gainedAt, gainId, ownerId]
     )
 
@@ -100,6 +111,11 @@ export const PostgresGainsRepository = (): IGainRepository => {
 
   const deleteGain = async (ownerId: string, gainId: string): Promise<void> => {
     await connectDatabase()
+
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!(ownerId.match(validUuidRegex) && gainId.match(validUuidRegex))) return
 
     await client.query('DELETE FROM GAINS WHERE ID = $1 AND OWNER_ID = $2', [
       gainId,
