@@ -1,22 +1,14 @@
 import { newDb } from 'pg-mem'
 import { PostgresUsersRepository } from './postgresUsersRepository'
 import { User } from '@entities/user'
+import { runMigrations } from '@database/runMigrations'
 
 jest.mock('@database/connectDatabase', () => ({
-  createDatabaseConnection: jest.fn(() => {
+  createDatabaseConnection: jest.fn(async () => {
     const { Pool } = newDb().adapters.createPg()
 
     const connection = new Pool()
-
-    connection.query(`
-      CREATE TABLE IF NOT EXISTS USERS (
-        ID UUID NOT NULL PRIMARY KEY,
-        NAME VARCHAR(255) NOT NULL,
-        LAST_NAME VARCHAR(255) NOT NULL,
-        EMAIL VARCHAR(255) NOT NULL,
-        PASSWORD VARCHAR(255) NOT NULL
-      );
-    `)
+    await runMigrations(connection)
 
     return connection
   })

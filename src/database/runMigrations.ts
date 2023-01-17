@@ -1,25 +1,27 @@
+import { promisify } from 'util'
+import * as fs from 'fs'
 import { join as joinPath } from 'path'
-import { readdir, readFile } from 'fs'
 import { createDatabaseConnection } from './connectDatabase'
-;(async () => {
-  const client = await createDatabaseConnection()
+import { Pool } from 'pg'
 
+const readdir = promisify(fs.readdir)
+const readFile = promisify(fs.readFile)
+
+export const runMigrations = async (connection?: Pool) => {
+  const client = connection ?? (await createDatabaseConnection())
   const fileDatabaseDir = joinPath(__dirname, 'migrations')
+  try {
+    const files = await readdir(fileDatabaseDir)
 
-  console.log('start migrations', new Date())
+    await Promise.all(
+      files.map(async file => {
+        const content = await readFile(joinPath(fileDatabaseDir, file), 'utf8')
+        const migrationQuery = content.toString()
 
-  readdir(fileDatabaseDir, (err, files) => {
-    if (err) console.error(err)
-
-    files.forEach(file => {
-      readFile(joinPath(fileDatabaseDir, file), async (err, content) => {
-        if (err) console.error(err)
-
-        const runMigrationQuery = content.toString()
-        await client.query(runMigrationQuery)
+        return client.query(migrationQuery)
       })
-    })
-  })
-
-  console.log('finish migrations', new Date())
-})()
+    )
+  } catch (err) {
+    console.error(err)
+  }
+}

@@ -3,35 +3,24 @@ import { newDb } from 'pg-mem'
 import { PostgresGainsRepository } from './postgresGainsRepository'
 import { v4 } from 'uuid'
 import { Gain } from '@entities/gain'
+import { runMigrations } from '@database/runMigrations'
 
 const userId = v4()
 
 jest.mock('@database/connectDatabase', () => ({
-  createDatabaseConnection: jest.fn(() => {
+  createDatabaseConnection: jest.fn(async () => {
     const { Pool } = newDb().adapters.createPg()
 
     const connection = new Pool()
 
-    connection.query(
+    await runMigrations(connection)
+
+    await connection.query(
       `
-      CREATE TABLE IF NOT EXISTS USERS (
-        ID UUID NOT NULL PRIMARY KEY
-      );
-
-      INSERT INTO USERS (ID) VALUES ($1);
-
-      CREATE TABLE IF NOT EXISTS GAINS (
-        ID UUID NOT NULL PRIMARY KEY,
-        VALUE MONEY NOT NULL,
-        GAINED_AT DATE DEFAULT now(),
-        OWNER_ID UUID NOT NULL,
-        CONSTRAINT FK_OWNER 
-        FOREIGN KEY(OWNER_ID) 
-            REFERENCES USERS(ID)
-            ON DELETE CASCADE
-      );
+      INSERT INTO USERS (ID, NAME, LAST_NAME, EMAIL, PASSWORD)
+      VALUES ($1, $2, $3, $4, $5)
     `,
-      [userId]
+      [userId, 'Joe', 'Doe', 'joe.doe@exemple.com', 'password']
     )
 
     return connection
