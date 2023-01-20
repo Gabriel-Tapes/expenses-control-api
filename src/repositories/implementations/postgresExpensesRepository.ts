@@ -19,6 +19,20 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
   ): Promise<void> => {
     await connectDatabase()
 
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!ownerId || !ownerId.match(validUuidRegex)) return
+
+    const { rows: matchingOwnerIds } = await client.query(
+      `
+        SELECT * FROM USERS WHERE ID = $1
+      `,
+      [ownerId]
+    )
+
+    if (!matchingOwnerIds.length) return
+
     await client.query(
       `
         INSERT INTO EXPENSES 
@@ -42,6 +56,12 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
     expenseId: string
   ): Promise<Expense | null> => {
     await connectDatabase()
+
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!(ownerId.match(validUuidRegex) && expenseId.match(validUuidRegex)))
+      return null
 
     const { rows } = await client.query(
       `
@@ -72,6 +92,11 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
   const getAllExpenses = async (ownerId: string): Promise<Expense[]> => {
     await connectDatabase()
 
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!ownerId || !ownerId.match(validUuidRegex)) return []
+
     const { rows } = await client.query(
       `
       SELECT * 
@@ -99,6 +124,11 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
 
   const getPaidExpenses = async (ownerId: string): Promise<Expense[]> => {
     await connectDatabase()
+
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!ownerId || !ownerId.match(validUuidRegex)) return []
 
     const { rows } = await client.query(
       `
@@ -130,6 +160,11 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
 
   const getNoPaidExpenses = async (ownerId: string): Promise<Expense[]> => {
     await connectDatabase()
+
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!ownerId || !ownerId.match(validUuidRegex)) return []
 
     const { rows } = await client.query(
       `
@@ -240,6 +275,12 @@ export const PostgresExpensesRepository = (): IExpenseRepository => {
     expenseId: string
   ): Promise<void> => {
     await connectDatabase()
+
+    const validUuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+    if (!(ownerId.match(validUuidRegex) && expenseId.match(validUuidRegex)))
+      return
 
     await client.query(
       `
